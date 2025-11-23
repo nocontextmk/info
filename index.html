@@ -1,697 +1,324 @@
-<!DOCTYPE html>
-<html lang="mk">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Вести Агрегатор - Македонија</title>
-    <style>
-        /* Основни стилови */
-        :root {
-            --primary: #2c3e50;
-            --secondary: #7f8c8d;
-            --accent: #3498db;
-            --light: #ecf0f1;
-            --dark: #2c3e50;
-            --border: #bdc3c7;
-            --text: #2c3e50;
-            --background: #f9f9f9;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            background-color: var(--background);
-            color: var(--text);
-            line-height: 1.5;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        /* Header стилови */
-        header {
-            background-color: white;
-            color: var(--text);
-            padding: 1rem 0;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            border-bottom: 1px solid var(--border);
-        }
-        
-        .container {
-            width: 90%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 15px;
-        }
-        
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--primary);
-        }
-        
-        .tagline {
-            font-size: 0.9rem;
-            color: var(--secondary);
-        }
-        
-        /* Navigation стилови */
-        nav {
-            background-color: white;
-            border-bottom: 1px solid var(--border);
-        }
-        
-        .categories {
-            display: flex;
-            overflow-x: auto;
-            padding: 0.5rem 0;
-            scrollbar-width: none;
-        }
-        
-        .categories::-webkit-scrollbar {
-            display: none;
-        }
-        
-        .category-btn {
-            background: none;
-            border: none;
-            padding: 0.5rem 1rem;
-            margin-right: 0.3rem;
-            border-radius: 4px;
-            cursor: pointer;
-            white-space: nowrap;
-            transition: all 0.2s ease;
-            font-size: 0.9rem;
-            color: var(--secondary);
-        }
-        
-        .category-btn:hover {
-            background-color: var(--light);
-        }
-        
-        .category-btn.active {
-            background-color: var(--accent);
-            color: white;
-        }
-        
-        /* Главна содржина */
-        main {
-            padding: 1.5rem 0;
-            flex-grow: 1;
-        }
-        
-        .category-section {
-            display: none;
-            margin-bottom: 1.5rem;
-        }
-        
-        .category-section.active {
-            display: block;
-        }
-        
-        .category-title {
-            margin-bottom: 1rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px solid var(--border);
-            color: var(--primary);
-            font-size: 1.3rem;
-        }
-        
-        .news-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
-        
-        .news-card {
-            background: white;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            border: 1px solid var(--border);
-        }
-        
-        .news-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-        
-        .news-content {
-            padding: 1.2rem;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .news-title {
-            font-size: 1.05rem;
-            margin-bottom: 0.7rem;
-            line-height: 1.4;
-        }
-        
-        .news-title a {
-            color: inherit;
-            text-decoration: none;
-        }
-        
-        .news-title a:hover {
-            color: var(--accent);
-            text-decoration: underline;
-        }
-        
-        .news-description {
-            color: var(--secondary);
-            font-size: 0.9rem;
-            margin-bottom: 1rem;
-            flex-grow: 1;
-            line-height: 1.5;
-        }
-        
-        .news-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.8rem;
-            color: var(--secondary);
-            margin-top: auto;
-        }
-        
-        .portal-name {
-            font-weight: 500;
-            background: var(--light);
-            padding: 0.2rem 0.6rem;
-            border-radius: 12px;
-            font-size: 0.75rem;
-        }
-        
-        .time-ago {
-            color: #7f8c8d;
-            font-size: 0.75rem;
-        }
-        
-        /* Footer стилови */
-        footer {
-            background-color: var(--dark);
-            color: white;
-            padding: 1.5rem 0;
-            margin-top: 2rem;
-        }
-        
-        .footer-content {
-            text-align: center;
-        }
-        
-        .footer-links {
-            margin: 1rem 0;
-        }
-        
-        .footer-links a {
-            color: #bdc3c7;
-            margin: 0 0.5rem;
-            text-decoration: none;
-            font-size: 0.9rem;
-        }
-        
-        .footer-links a:hover {
-            color: white;
-            text-decoration: underline;
-        }
-        
-        .disclaimer {
-            font-size: 0.8rem;
-            color: #bdc3c7;
-            margin-top: 1rem;
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
-            line-height: 1.4;
-        }
-        
-        .auto-refresh-info {
-            font-size: 0.8rem;
-            color: #bdc3c7;
-            margin-top: 0.5rem;
-        }
-        
-        .copyright {
-            margin-top: 1rem;
-            padding-top: 1rem;
-            border-top: 1px solid #34495e;
-            font-size: 0.8rem;
-        }
-        
-        /* Loading индикатор */
-        .loading {
-            text-align: center;
-            padding: 2rem;
-            color: var(--secondary);
-        }
-        
-        .loading-spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid var(--accent);
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 1rem;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        /* Responsive дизајн */
-        @media (max-width: 768px) {
-            .header-content {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .logo {
-                margin-bottom: 0.5rem;
-            }
-            
-            .news-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .categories {
-                padding: 0.4rem 0;
-            }
-            
-            .category-btn {
-                padding: 0.4rem 0.8rem;
-                font-size: 0.85rem;
-            }
-        }
-        
-        @media (min-width: 769px) and (max-width: 1024px) {
-            .news-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-        
-        /* Нотификации */
-        .notification {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            padding: 0.8rem 1.2rem;
-            border-radius: 4px;
-            color: white;
-            z-index: 1000;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            transform: translateX(150%);
-            transition: transform 0.3s ease;
-            max-width: 300px;
-            font-size: 0.9rem;
-        }
-        
-        .notification.show {
-            transform: translateX(0);
-        }
-        
-        .notification.success {
-            background-color: #27ae60;
-        }
-        
-        .notification.error {
-            background-color: #e74c3c;
-        }
-        
-        .notification.info {
-            background-color: #3498db;
-        }
-        
-        /* Додатни стилови */
-        .empty-state {
-            text-align: center;
-            padding: 3rem 1rem;
-            color: var(--secondary);
-        }
-        
-        .portal-count {
-            display: inline-block;
-            background: var(--accent);
-            color: white;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            line-height: 20px;
-            text-align: center;
-            font-size: 0.7rem;
-            margin-left: 5px;
-        }
-        
-        .error-message {
-            background: #ffeaa7;
-            border: 1px solid #fdcb6e;
-            border-radius: 4px;
-            padding: 1rem;
-            margin: 1rem 0;
-            color: #e17055;
-            font-size: 0.9rem;
-        }
-    </style>
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Business News Aggregator</title>
+
+<style>
+@font-face{
+ font-family:'DejaVu Sans Mono';
+ src:url('https://cdn.jsdelivr.net/gh/strugee/dejavu-fonts-ttf/ttf/DejaVuSansMono.ttf') format('truetype');
+}
+
+:root{
+ --bg-dark:#0b0b0c;
+ --panel-dark:#0f1113;
+ --text-dark:#e6eef3;
+
+ --bg-light:#ffffff;
+ --panel-light:#f7f7f7;
+ --text-light:#0b0b0c;
+
+ --radius:8px;
+ --max:980px;
+}
+
+html,body{
+ margin:0;
+ font-family:'DejaVu Sans Mono',monospace;
+ background:var(--bg-dark);
+ color:var(--text-dark);
+}
+
+body[data-theme="light"]{
+ background:var(--bg-light);
+ color:var(--text-light);
+}
+
+/* ---------------- HEADER ---------------- */
+.header{
+ position:sticky;top:0;z-index:20;
+ background:inherit;
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ padding:10px 0 12px;
+}
+
+.cats{
+ display:flex;
+ gap:6px;
+ overflow-x:auto;
+ padding-bottom:4px;
+}
+
+.cat{
+ padding:4px 10px;
+ border-radius:999px;
+ cursor:pointer;
+ font-weight:600;
+ font-size:0.70rem;
+ white-space:nowrap;
+ background:none;
+ opacity:0.85;
+}
+
+/* DARK MODE categories */
+body[data-theme="dark"] .cat{
+ color:#ffffff;
+ border:1px solid rgba(255,255,255,0.35);
+}
+/* LIGHT MODE categories */
+body[data-theme="light"] .cat{
+ color:#000000;
+ border:1px solid rgba(0,0,0,0.35);
+}
+
+/* ACTIVE CATEGORY */
+/* DARK MODE → black pill */
+body[data-theme="dark"] .cat.active{
+ background:#000000;
+ color:#ffffff;
+ border-color:#000000;
+ opacity:1;
+}
+/* LIGHT MODE → white pill */
+body[data-theme="light"] .cat.active{
+ background:#ffffff;
+ color:#000000;
+ border-color:#ffffff;
+ opacity:1;
+}
+
+.cat:hover{opacity:1;}
+
+/* THEME BUTTON */
+.themeBtn{
+ width:24px;height:24px;
+ border-radius:50%;
+ background:none;
+ cursor:pointer;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+}
+
+/* Dark mode = white outline */
+body[data-theme="dark"] .themeBtn{
+ border:2px solid #ffffff;
+ color:#ffffff;
+}
+
+/* Light mode = black outline */
+body[data-theme="light"] .themeBtn{
+ border:2px solid #000000;
+ color:#000000;
+}
+
+/* ---------------- LIST ---------------- */
+.list{
+ display:grid;
+ gap:12px;
+ margin-top:10px;
+}
+
+.item{
+ background:rgba(255,255,255,0.04);
+ border-radius:8px;
+ padding:14px;
+}
+body[data-theme="light"] .item{
+ background:#ffffff;
+ border:1px solid rgba(0,0,0,0.08);
+}
+
+/* LINKS */
+body[data-theme="dark"] a{color:#ffffff;}
+body[data-theme="light"] a{color:#000000;}
+a{text-decoration:none;}
+
+.title{
+ font-size:0.80rem;
+ font-weight:700;
+ margin:0;
+}
+
+.meta{
+ display:flex;
+ gap:12px;
+ font-size:0.72rem;
+ opacity:0.7;
+}
+
+.regionTag{
+ text-transform:uppercase;
+ font-weight:700;
+}
+
+footer{
+ margin-top:20px;
+ padding-top:12px;
+ font-size:0.75rem;
+ opacity:0.6;
+ border-top:1px dashed rgba(255,255,255,0.15);
+}
+body[data-theme="light"] footer{
+ border-top:1px dashed rgba(0,0,0,0.2);
+}
+</style>
 </head>
-<body>
-    <header>
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">Вести Агрегатор</div>
-                <div class="tagline">Сите важни вести на едно место</div>
-            </div>
-        </div>
-    </header>
-    
-    <nav>
-        <div class="container">
-            <div class="categories" id="categories-container">
-                <button class="category-btn active" data-category="macedonia">Македонија</button>
-                <button class="category-btn" data-category="world">Свет</button>
-            </div>
-        </div>
-    </nav>
-    
-    <main class="container">
-        <div id="news-container">
-            <div class="loading">
-                <div class="loading-spinner"></div>
-                <p>Вчитувам вести...</p>
-            </div>
-        </div>
-    </main>
-    
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-links">
-                    <a href="#" id="about-link">За нас</a>
-                    <a href="#" id="refresh-now-link">Ажурирај сега</a>
-                </div>
-                <div class="disclaimer">
-                    <p><strong>Оваа страна е open source и непрофитна.</strong> Сите вести се преземаат од јавно достапни извори и се прикажуваат единствено за информативни цели.</p>
-                </div>
-                <div class="auto-refresh-info">
-                    <p>Страната автоматски се ажурира на секои 15 минути за најнови вести</p>
-                </div>
-                <div class="copyright">
-                    <p>&copy; 2023 Вести Агрегатор - Македонија. Сите права се задржани.</p>
-                </div>
-            </div>
-        </div>
-    </footer>
 
-    <!-- Нотификации -->
-    <div id="notification" class="notification"></div>
+<body data-theme="dark">
+<div style="max-width:var(--max);margin:auto;padding:20px;">
 
-    <script>
-        // RSS линкови за Македонија и Свет
-        const rssFeeds = {
-            macedonia: [
-                'https://plusinfo.mk/category/makedoni-a/feed/',
-                'https://zurnal.mk/category/makedonija/feed/',
-                'https://sdk.mk/index.php/category/makedonija/feed/',
-                'https://makfax.com.mk/makedonija/feed/'
-            ],
-            world: [
-                'https://sdk.mk/index.php/category/svet/feed/',
-                'https://makfax.com.mk/svet/feed/',
-                'https://zurnal.mk/category/svet/feed/'
-            ]
-        };
+<header class="header">
+ <div class="cats">
+  <button class="cat active" data-cat="ALL">ALL</button>
+  <button class="cat" data-cat="US">US</button>
+  <button class="cat" data-cat="UK">UK</button>
+  <button class="cat" data-cat="EU">EU</button>
+  <button class="cat" data-cat="AS">AS</button>
+  <button class="cat" data-cat="AF">AF</button>
+  <button class="cat" data-cat="AU">AU</button>
+ </div>
+ <button id="themeToggle" class="themeBtn"></button>
+</header>
 
-        // Мапа за имиња на портали
-        const portalNames = {
-            'plusinfo.mk': '+инфо',
-            'zurnal.mk': 'Журнал',
-            'sdk.mk': 'СДК',
-            'makfax.com.mk': 'Макфакс'
-        };
+<div id="items" class="list">
+ <div style="opacity:.6">Loading feeds...</div>
+</div>
 
-        // Глобални променливи
-        let activeCategory = 'macedonia';
-        let allNews = {
-            macedonia: [],
-            world: []
-        };
-        let refreshInterval;
+<footer>
+    <div style="font-size: 11px; line-height: 1.4; max-width: 900px; margin: auto; opacity: 0.7; padding: 20px;">
+        <strong>Legal Disclaimer & Protection:</strong><br>
+        deef is an open-source, non-profit educational project developed for personal learning purposes only. 
+        This application aggregates publicly available RSS feeds and displays them in a minimal, readable format.
+        <br><br>
 
-        // Функција за прикажување на нотификации
-        function showNotification(message, type = 'success') {
-            const notification = document.getElementById('notification');
-            notification.textContent = message;
-            notification.className = `notification ${type}`;
-            notification.classList.add('show');
-            
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 3000);
-        }
+        <strong>Copyright & Content Protection:</strong><br>
+        • All RSS feed content belongs to their respective publishers and copyright holders<br>
+        • deef does not claim ownership over any news content or articles<br>
+        • This project merely displays headlines and links to original sources<br>
+        • No content is hosted, stored, or modified by deef<br>
+        • All trademarks and registered trademarks are property of their respective owners
+        <br><br>
 
-        // Функција за форматирање на времето
-        function formatTimeAgo(pubDate) {
-            const now = new Date();
-            const publishTime = new Date(pubDate);
-            const diffMs = now - publishTime;
-            const diffMins = Math.floor(diffMs / (1000 * 60));
-            const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-            const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-            
-            if (diffMins < 60) {
-                return `${diffMins} мин`;
-            } else if (diffHours < 24) {
-                return `${diffHours}Ч`;
-            } else {
-                return `${diffDays} ден${diffDays !== 1 ? 'а' : ''}`;
-            }
-        }
+        <strong>Content Removal Requests:</strong><br>
+        If you are a content owner and wish to have your RSS feed removed from this aggregator, please contact me via GitHub. 
+        I respect intellectual property rights and will promptly address legitimate removal requests.
+        <br><br>
 
-        // Функција за добивање на име на портал од URL
-        function getPortalName(url) {
-            try {
-                const domain = new URL(url).hostname;
-                return portalNames[domain] || domain;
-            } catch (e) {
-                return 'Портал';
-            }
-        }
+        <strong>Open Source & Educational Purpose:</strong><br>
+        This is an open-source project built for educational purposes. 
+        The code is available for learning and non-commercial use. 
+        deef generates no revenue and operates as a personal learning project.
+        <br><br>
 
-        // Функција за парсирање на RSS feed
-        async function parseRSSFeed(feedUrl) {
-            try {
-                // Користиме CORS proxy за да избегнеме CORS грешки
-                const proxyUrl = 'https://api.allorigins.win/raw?url=';
-                const response = await fetch(proxyUrl + encodeURIComponent(feedUrl));
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const text = await response.text();
-                const parser = new DOMParser();
-                const xmlDoc = parser.parseFromString(text, "text/xml");
-                
-                // Проверка дали RSS feed-от е валиден
-                const parseError = xmlDoc.getElementsByTagName("parsererror")[0];
-                if (parseError) {
-                    throw new Error("Invalid RSS feed");
-                }
-                
-                const items = xmlDoc.getElementsByTagName("item");
-                const newsItems = [];
-                
-                for (let i = 0; i < Math.min(items.length, 10); i++) {
-                    const item = items[i];
-                    const title = item.getElementsByTagName("title")[0]?.textContent || "Без наслов";
-                    const link = item.getElementsByTagName("link")[0]?.textContent || feedUrl;
-                    const description = item.getElementsByTagName("description")[0]?.textContent || "";
-                    const pubDate = item.getElementsByTagName("pubDate")[0]?.textContent || new Date().toISOString();
-                    
-                    // Чистење на HTML од описот
-                    const cleanDescription = description.replace(/<[^>]*>/g, '').substring(0, 150) + '...';
-                    
-                    newsItems.push({
-                        title: title.trim(),
-                        link: link.trim(),
-                        description: cleanDescription,
-                        pubDate: pubDate,
-                        portal: getPortalName(feedUrl)
-                    });
-                }
-                
-                return newsItems;
-            } catch (error) {
-                console.error(`Error parsing RSS feed ${feedUrl}:`, error);
-                return [];
-            }
-        }
+        <a href="#" style="color:var(--text); text-decoration:underline;">View Source Code on GitHub</a><br>
+        <a href="#" style="color:var(--text); text-decoration:underline;">Contact via GitHub Profile</a>
+        <br><br>
 
-        // Функција за вчитување на сите вести за категорија
-        async function loadCategoryNews(category) {
-            const feedUrls = rssFeeds[category];
-            const allPromises = feedUrls.map(url => parseRSSFeed(url));
-            
-            try {
-                const results = await Promise.allSettled(allPromises);
-                const newsItems = results
-                    .filter(result => result.status === 'fulfilled')
-                    .flatMap(result => result.value);
-                
-                // Сортирање по датум (најнови први)
-                newsItems.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
-                
-                allNews[category] = newsItems;
-                return newsItems;
-            } catch (error) {
-                console.error(`Error loading news for ${category}:`, error);
-                return [];
-            }
-        }
+        © 2025 deef — All rights reserved.
+    </div>
+</footer>
 
-        // Функција за прикажување на вести
-        function renderNews(category) {
-            const newsContainer = document.getElementById('news-container');
-            const news = allNews[category];
-            
-            if (news.length === 0) {
-                newsContainer.innerHTML = `
-                    <div class="empty-state">
-                        <h3>Нема вести во моментов</h3>
-                        <p>Вестите се вчитуваат или има проблем со сервисите.</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            let newsHTML = `<div class="category-section active">
-                <h2 class="category-title">${category === 'macedonia' ? 'Македонија' : 'Свет'}</h2>
-                <div class="news-grid">`;
-            
-            news.forEach(item => {
-                const timeAgo = formatTimeAgo(item.pubDate);
-                newsHTML += `
-                    <div class="news-card">
-                        <div class="news-content">
-                            <h3 class="news-title">
-                                <a href="${item.link}" target="_blank" rel="noopener noreferrer">${item.title}</a>
-                            </h3>
-                            <p class="news-description">${item.description}</p>
-                            <div class="news-meta">
-                                <span class="portal-name">${item.portal}</span>
-                                <span class="time-ago">${timeAgo}</span>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            newsHTML += `</div></div>`;
-            newsContainer.innerHTML = newsHTML;
-        }
+</div>
 
-        // Функција за преминување помеѓу категории
-        function switchCategory(category) {
-            activeCategory = category;
-            
-            // Ажурирање на активната категорија во навигацијата
-            document.querySelectorAll('.category-btn').forEach(btn => {
-                btn.classList.remove('active');
-                if (btn.getAttribute('data-category') === category) {
-                    btn.classList.add('active');
-                }
-            });
-            
-            // Прикажување на вестите за избраната категорија
-            if (allNews[category].length > 0) {
-                renderNews(category);
-            } else {
-                document.getElementById('news-container').innerHTML = `
-                    <div class="loading">
-                        <div class="loading-spinner"></div>
-                        <p>Вчитувам вести...</p>
-                    </div>
-                `;
-                loadCategoryNews(category).then(() => renderNews(category));
-            }
-        }
+<script>
+const FEEDS=[
+ {url:"https://feeds.feedburner.com/SmallBusinessTrends",cat:"US"},
+ {url:"https://www.entrepreneur.com/topic/startup.rss",cat:"US"},
+ {url:"https://www.inc.com/rss/startup",cat:"US"},
+ {url:"https://www.wired.com/feed/category/business/latest/rss",cat:"US"},
+ {url:"https://www.theguardian.com/business/small-business/rss",cat:"UK"},
+ {url:"https://www.smallbusiness.co.uk/feed/",cat:"UK"},
+ {url:"https://www.eu-startups.com/feed/",cat:"EU"},
+ {url:"https://www.euronews.com/rss?level=theme&name=Business",cat:"EU"},
+ {url:"https://asia.nikkei.com/rss/feed?feedType=breakingNews",cat:"AS"},
+ {url:"https://african.business/feed/",cat:"AF"},
+ {url:"https://www.smartcompany.com.au/feed/",cat:"AU"},
+];
 
-        // Функција за ажурирање на сите вести
-        async function refreshAllNews() {
-            showNotification("Вестите се ажурираат...", 'info');
-            
-            try {
-                await Promise.all([
-                    loadCategoryNews('macedonia'),
-                    loadCategoryNews('world')
-                ]);
-                
-                renderNews(activeCategory);
-                showNotification("Вестите се ажурирани успешно!", 'success');
-            } catch (error) {
-                console.error('Error refreshing news:', error);
-                showNotification("Грешка при ажурирање на вестите", 'error');
-            }
-        }
+const proxy="https://api.allorigins.win/raw?url=";
+let allItems=[];
 
-        // Функција за стартување на авто-освежување
-        function startAutoRefresh() {
-            // Поставување на интервал за авто-освежување на секои 15 минути
-            refreshInterval = setInterval(refreshAllNews, 15 * 60 * 1000);
-        }
+async function fetchRaw(url){
+ try{
+  const r=await fetch(proxy+encodeURIComponent(url));
+  if(!r.ok) return null;
+  return await r.text();
+ }catch{return null;}
+}
 
-        // Иницијализација на страната
-        document.addEventListener('DOMContentLoaded', async function() {
-            // Додавање на event listeners за категориите
-            document.querySelectorAll('.category-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const category = btn.getAttribute('data-category');
-                    switchCategory(category);
-                });
-            });
-            
-            // Додавање на event listeners за линковите во footer-от
-            document.getElementById('about-link').addEventListener('click', (e) => {
-                e.preventDefault();
-                alert("Вести Агрегатор - Македонија е непрофитен проект со цел да ги агрегира вестите од македонските портали на едно место. Оваа страна користи RSS feeds за да ги прикаже најновите вести.");
-            });
-            
-            document.getElementById('refresh-now-link').addEventListener('click', (e) => {
-                e.preventDefault();
-                refreshAllNews();
-            });
-            
-            // Вчитување на почетни вести
-            try {
-                await refreshAllNews();
-                startAutoRefresh();
-            } catch (error) {
-                console.error('Error initializing app:', error);
-                document.getElementById('news-container').innerHTML = `
-                    <div class="error-message">
-                        <strong>Грешка при вчитување на вестите</strong>
-                        <p>Обидете се повторно или проверете ја интернет врската.</p>
-                    </div>
-                `;
-            }
-        });
-    </script>
+function parseRSS(text,url){
+ const xml=new DOMParser().parseFromString(text,"text/xml");
+ const items=[...xml.querySelectorAll("item"), ...xml.querySelectorAll("entry")];
+ const source=(xml.querySelector("channel>title")||xml.querySelector("title"))?.textContent||url;
+ return items.map(n=>{
+  const title=n.querySelector("title")?.textContent||"";
+  const link=n.querySelector("link")?.getAttribute("href") || n.querySelector("link")?.textContent || "";
+  const pub=n.querySelector("pubDate")?.textContent || n.querySelector("updated")?.textContent || "";
+  return {title,link,source,pubDate:new Date(pub||Date.now())};
+ });
+}
+
+async function loadFeeds(){
+ const out=(await Promise.all(FEEDS.map(async f=>{
+  const raw=await fetchRaw(f.url);
+  if(!raw) return [];
+  return parseRSS(raw,f.url).map(i=>({...i,cat:f.cat}));
+ }))).flat();
+
+ allItems=out.sort((a,b)=>b.pubDate-a.pubDate);
+ render();
+}
+
+function ago(d){
+ let s=(Date.now()-d)/1000;
+ if(s<60) return Math.floor(s)+"s";
+ if(s<3600) return Math.floor(s/60)+"m";
+ if(s<86400) return Math.floor(s/3600)+"h";
+ return Math.floor(s/86400)+"d";
+}
+
+function render(){
+ const c=document.querySelector(".cat.active").dataset.cat;
+ let list=(c==="ALL"?allItems:allItems.filter(i=>i.cat===c)).slice(0,30);
+
+ const box=document.getElementById("items");
+ box.innerHTML="";
+ list.forEach(i=>{
+  box.innerHTML+=`
+  <div class="item">
+    <a href="${i.link}" target="_blank"><h3 class="title">${i.title}</h3></a>
+    <div class="meta">
+      <div>${i.source}</div>
+      <div>${ago(i.pubDate)}</div>
+      <div class="regionTag">${i.cat}</div>
+    </div>
+  </div>`;
+ });
+}
+
+document.querySelectorAll(".cat").forEach(b=>{
+ b.onclick=()=>{
+  document.querySelectorAll(".cat").forEach(x=>x.classList.remove("active"));
+  b.classList.add("active");
+  render();
+ };
+});
+
+document.getElementById("themeToggle").onclick=()=>{
+ const t=document.body.dataset.theme;
+ const next=t==="dark"?"light":"dark";
+ document.body.dataset.theme=next;
+ localStorage.setItem("theme",next);
+};
+
+document.body.dataset.theme=localStorage.getItem("theme")||"dark";
+
+loadFeeds();
+</script>
+
 </body>
 </html>
+
